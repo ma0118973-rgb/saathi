@@ -5,7 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#e95b35" />
-  <link rel="icon" href="data:," />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Saathi" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="data:image/png;base64,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" />
+  <link rel="apple-touch-icon" href="data:image/png;base64,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" />
   <title>Saathi</title>
   <style>
     :root {
@@ -69,6 +74,74 @@
     button { cursor: pointer; }
     :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
     .shell { min-height: 100vh; min-height: 100dvh; }
+
+    /* Install entry point */
+    .install-strip {
+      padding: max(10px, env(safe-area-inset-top)) 18px 10px;
+      background: var(--accent);
+      color: #fff;
+    }
+    .install-button {
+      width: min(100%, 920px);
+      min-height: 48px;
+      margin: 0 auto;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      border: 1px solid rgba(255,255,255,.34);
+      border-radius: 11px;
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      font-weight: 750;
+    }
+    .install-button:hover { background: rgba(255,255,255,.22); }
+    .install-button svg { width: 21px; height: 21px; flex: none; }
+    .install-button small { display: block; font-size: .72rem; font-weight: 500; opacity: .86; }
+    .install-button[disabled] { cursor: default; opacity: .76; }
+
+    /* App-owned install and permission dialogs */
+    .dialog-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: max(22px, env(safe-area-inset-top)) 18px max(22px, env(safe-area-inset-bottom));
+      overflow-y: auto;
+      background: var(--scrim);
+    }
+    .dialog-card {
+      width: min(100%, 470px);
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 22px 7px 22px 22px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .dialog-symbol {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      border-radius: 12px 4px 12px 12px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+    }
+    .dialog-symbol svg { width: 22px; height: 22px; }
+    .dialog-card h2 { margin: 0 0 8px; font-size: 1.3rem; letter-spacing: -.02em; }
+    .dialog-card p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+    .dialog-actions button { min-height: 48px; border-radius: 11px; padding: 0 14px; font-weight: 700; }
+    .secondary { border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+    .allow { border: 0; background: var(--accent); color: #fff; }
+    .allow:hover { background: var(--accent-strong); }
+    .install-help { display: grid; gap: 14px; margin-top: 18px; }
+    .install-help section { padding-top: 14px; border-top: 1px solid var(--line); }
+    .install-help strong { display: block; margin-bottom: 4px; font-size: .92rem; }
+    .install-help span { color: var(--muted); font-size: .88rem; line-height: 1.45; }
 
     /* API key dialog */
     [hidden] { display: none !important; }
@@ -218,7 +291,9 @@
       .intro p { font-size: 1rem; }
       .capabilities { grid-template-columns: 1fr 1fr; font-size: .9rem; gap: 10px; }
       .key-card { border-radius: 22px 7px 22px 22px; padding: 24px 20px; }
-      .thread { padding-top: 26px; padding-bottom: 270px; }
+      .thread { padding-top: 26px; padding-bottom: 26px; }
+      .welcome { padding-bottom: 0; }
+      .composer-zone { position: static; padding-top: 18px; background: var(--bg); }
       .welcome { margin-top: 3vh; }
       .feature-strip { grid-template-columns: 1fr 1fr; }
       .feature-strip li { border-bottom: 1px solid var(--line); }
@@ -240,6 +315,46 @@
 </head>
 <body>
   <div class="shell">
+    <div class="install-strip" id="installStrip">
+      <button class="install-button" id="installBtn" type="button" aria-describedby="installHint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+        <span><span id="installLabel">Install App</span><small id="installHint">Android, iPhone aur laptop</small></span>
+      </button>
+    </div>
+
+    <section class="dialog-layer" id="installDialog" role="dialog" aria-modal="true" aria-labelledby="installTitle" hidden>
+      <div class="dialog-card">
+        <div class="dialog-symbol" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+        </div>
+        <h2 id="installTitle">Saathi install karein</h2>
+        <p>Agar browser ka install box na khule to apne device ke yeh chhote steps use karein:</p>
+        <div class="install-help">
+          <section><strong>Android Chrome</strong><span>Chrome menu ⋮ → “Install app” ya “Add to Home screen”.</span></section>
+          <section><strong>iPhone Safari</strong><span>Share button → “Add to Home Screen” → Add.</span></section>
+          <section><strong>Laptop / Desktop</strong><span>Address bar mein install icon dabayein, ya browser menu → “Install Saathi”.</span></section>
+        </div>
+        <div class="dialog-actions">
+          <button class="secondary" id="closeInstall" type="button">Abhi nahi</button>
+          <button class="allow" id="closeInstallDone" type="button">Steps samajh gaye</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="dialog-layer" id="permissionDialog" role="dialog" aria-modal="true" aria-labelledby="permissionTitle" aria-describedby="permissionText" hidden>
+      <div class="dialog-card">
+        <div class="dialog-symbol" id="permissionSymbol" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg>
+        </div>
+        <h2 id="permissionTitle">Microphone ki ijazat</h2>
+        <p id="permissionText">Saathi aapki awaaz ko message mein badalne ke liye microphone use karega. Audio sirf is feature ke liye access hoga.</p>
+        <div class="dialog-actions">
+          <button class="secondary" id="permissionCancel" type="button">Cancel</button>
+          <button class="allow" id="permissionAllow" type="button">Allow</button>
+        </div>
+      </div>
+    </section>
+
     <section class="setup" id="setupView" role="dialog" aria-modal="true" aria-labelledby="setupTitle" hidden>
       <div class="setup-grid">
         <div class="intro">
@@ -375,6 +490,8 @@
   var resumeAfterKey = false;
   var browserUA = navigator.userAgent || "";
   var embeddedWebView = /(?:;\s*wv\)|\bwv\b|FBAN|FBAV|Instagram)/i.test(browserUA);
+  var deferredInstallPrompt = null;
+  var permissionResolver = null;
 
   function speechOutputAvailable() {
     return !embeddedWebView && "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
@@ -399,11 +516,124 @@
   var attachmentName = document.getElementById("attachmentName");
   var micBtn = document.getElementById("micBtn");
   var toast = document.getElementById("toast");
+  var installBtn = document.getElementById("installBtn");
+  var installLabel = document.getElementById("installLabel");
+  var installHint = document.getElementById("installHint");
+  var installDialog = document.getElementById("installDialog");
+  var permissionDialog = document.getElementById("permissionDialog");
+  var permissionTitle = document.getElementById("permissionTitle");
+  var permissionText = document.getElementById("permissionText");
+  var permissionSymbol = document.getElementById("permissionSymbol");
 
   function showToast(text) {
     toast.textContent = text;
     toast.classList.add("show");
     window.setTimeout(function () { toast.classList.remove("show"); }, 2100);
+  }
+
+  function isInstalled() {
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  }
+
+  function updateInstallState() {
+    if (isInstalled()) {
+      installLabel.textContent = "App installed";
+      installHint.textContent = "Saathi home screen se kholein";
+      installBtn.disabled = true;
+    }
+  }
+
+  async function triggerInstall() {
+    if (!deferredInstallPrompt) {
+      installDialog.hidden = false;
+      return;
+    }
+    try {
+      deferredInstallPrompt["prompt"]();
+      var choice = await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      if (choice && choice.outcome === "accepted") {
+        showToast("Install shuru ho gaya");
+      } else {
+        showToast("Install cancel hua — jab chahein dobara try karein");
+      }
+    } catch (installError) {
+      installDialog.hidden = false;
+    }
+  }
+
+  function explainPermission(kind) {
+    if (permissionResolver) permissionResolver(false);
+    if (kind === "camera") {
+      permissionTitle.textContent = "Camera ki ijazat";
+      permissionText.textContent = "Saathi tasveer lene ya image picker kholne ke liye camera access maang raha hai. Camera sirf aapke is action par khulega.";
+      permissionSymbol.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3z"/><circle cx="12" cy="13" r="3"/></svg>';
+    } else {
+      permissionTitle.textContent = "Microphone ki ijazat";
+      permissionText.textContent = "Saathi aapki awaaz ko message mein badalne ke liye microphone use karega. Mic sirf aapke is action par chalega.";
+      permissionSymbol.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg>';
+    }
+    permissionDialog.hidden = false;
+    return new Promise(function (resolve) { permissionResolver = resolve; });
+  }
+
+  function resolvePermission(allowed) {
+    permissionDialog.hidden = true;
+    if (permissionResolver) {
+      var resolve = permissionResolver;
+      permissionResolver = null;
+      resolve(allowed);
+    }
+  }
+
+  async function requestDevicePermission(kind) {
+    var allowed = await explainPermission(kind);
+    if (!allowed) {
+      showToast(kind === "camera" ? "Camera se tasveer lene ke liye permission zaroori hai" : "Awaaz se message likhne ke liye microphone permission zaroori hai");
+      return false;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      if (kind === "camera") return true;
+      showToast("Is browser mein microphone access available nahi");
+      return false;
+    }
+    try {
+      var constraints = kind === "camera" ? { video: { facingMode: "environment" } } : { audio: true };
+      var stream = await navigator.mediaDevices.getUserMedia(constraints);
+      stream.getTracks().forEach(function (track) { track.stop(); });
+      return true;
+    } catch (permissionError) {
+      showToast(kind === "camera" ? "Tasveer ke liye camera permission zaroori hai" : "Awaaz ke liye microphone permission zaroori hai");
+      return false;
+    }
+  }
+
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    installLabel.textContent = "Install App";
+    installHint.textContent = "Ek click se device par lagayein";
+  });
+  window.addEventListener("appinstalled", function () {
+    deferredInstallPrompt = null;
+    updateInstallState();
+    showToast("Saathi install ho gaya");
+  });
+  installBtn.addEventListener("click", triggerInstall);
+  document.getElementById("closeInstall").addEventListener("click", function () { installDialog.hidden = true; });
+  document.getElementById("closeInstallDone").addEventListener("click", function () { installDialog.hidden = true; });
+  document.getElementById("permissionAllow").addEventListener("click", function () { resolvePermission(true); });
+  document.getElementById("permissionCancel").addEventListener("click", function () { resolvePermission(false); });
+  updateInstallState();
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      try {
+        navigator.serviceWorker.register("sw.js").catch(function () { return undefined; });
+      } catch (serviceWorkerError) {
+        /* Saathi remains fully usable when service worker registration is unavailable. */
+      }
+    });
   }
 
   function escapeHtml(text) {
@@ -659,7 +889,11 @@
     });
   });
 
-  document.getElementById("attachBtn").addEventListener("click", function () { fileInput.click(); });
+  document.getElementById("attachBtn").addEventListener("click", async function () {
+    var allowed = await explainPermission("camera");
+    if (allowed) fileInput.click();
+    else showToast("Camera se tasveer lene ke liye permission zaroori hai");
+  });
   document.getElementById("removeAttachment").addEventListener("click", clearAttachment);
   fileInput.addEventListener("change", function () {
     var file = fileInput.files && fileInput.files[0];
@@ -691,9 +925,15 @@
       promptInput.value = transcript;
       autoResize();
     };
-    micBtn.addEventListener("click", function () {
+    micBtn.addEventListener("click", async function () {
+      if (micBtn.classList.contains("listening")) {
+        recognition.stop();
+        return;
+      }
+      var allowed = await requestDevicePermission("microphone");
+      if (!allowed) return;
       try {
-        if (micBtn.classList.contains("listening")) recognition.stop(); else recognition.start();
+        recognition.start();
       } catch (recognitionError) {
         showToast("Voice input shuru nahi ho saka");
       }
