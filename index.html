@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#e95b35" />
+  <link rel="icon" href="data:," />
+  <title>Saathi</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f5f0;
+      --surface: #ffffff;
+      --surface-2: #eeeae2;
+      --ink: #191b1e;
+      --muted: #5d6167;
+      --line: #d9d4ca;
+      --accent: #d94925;
+      --accent-strong: #b93418;
+      --accent-soft: #f9ddd4;
+      --good: #227b58;
+      --danger: #b62e2e;
+      --shadow: 0 22px 56px rgba(45, 38, 30, .12);
+      --user: #20242a;
+      --user-ink: #fff;
+      --focus: #1269b0;
+      --focus-ring: rgba(18, 105, 176, .48);
+      --scrim: rgba(25, 27, 30, .42);
+      --accent-shadow: rgba(217, 73, 37, .28);
+      --good-ring: rgba(34, 123, 88, .13);
+      --danger-ring: rgba(182, 46, 46, .18);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121416;
+        --surface: #1b1e21;
+        --surface-2: #25292d;
+        --ink: #f5f2eb;
+        --muted: #b5b8bc;
+        --line: #353a3f;
+        --accent: #ff754f;
+        --accent-strong: #ff9678;
+        --accent-soft: #43261e;
+        --good: #6bc79f;
+        --danger: #ff8c88;
+        --shadow: 0 22px 56px rgba(0, 0, 0, .34);
+        --user: #f0ece3;
+        --user-ink: #181a1d;
+        --focus: #6eb8f3;
+        --focus-ring: rgba(110, 184, 243, .5);
+        --scrim: rgba(0, 0, 0, .68);
+        --accent-shadow: rgba(255, 117, 79, .22);
+        --good-ring: rgba(107, 199, 159, .13);
+        --danger-ring: rgba(255, 140, 136, .18);
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea, select { font: inherit; }
+    button, input, textarea, select { color: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+    .shell { min-height: 100vh; min-height: 100dvh; }
+
+    /* API key dialog */
+    [hidden] { display: none !important; }
+    .setup {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      overflow-y: auto;
+      padding: max(24px, env(safe-area-inset-top)) 18px max(24px, env(safe-area-inset-bottom));
+      background: var(--scrim);
+    }
+    .setup-grid {
+      width: min(100%, 560px);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      align-items: center;
+    }
+    .setup .intro { display: none; }
+    .intro h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2.5rem, 6vw, 5.1rem);
+      line-height: .98;
+      letter-spacing: -.055em;
+      max-width: 8ch;
+    }
+    .intro p { margin: 0; max-width: 38rem; color: var(--muted); font-size: 1.08rem; line-height: 1.65; }
+    .capabilities { list-style: none; padding: 0; margin: 30px 0 0; display: grid; gap: 12px; }
+    .capabilities li { display: flex; align-items: center; gap: 11px; font-weight: 500; }
+    .capabilities svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
+    .key-card { position: relative; background: var(--surface); padding: clamp(24px, 4vw, 42px); border: 1px solid var(--line); box-shadow: var(--shadow); border-radius: 28px 8px 28px 28px; }
+    .key-card h2 { margin: 0 48px 8px 0; font-size: 1.45rem; letter-spacing: -.025em; }
+    .modal-close { position: absolute; top: 16px; right: 16px; }
+    .key-card > p { margin: 0 0 24px; color: var(--muted); line-height: 1.55; }
+    .field-label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 0 0 8px; font-weight: 600; }
+    .field-label small { color: var(--muted); font-weight: 400; }
+    .input-wrap { position: relative; }
+    .input-wrap input {
+      width: 100%; min-height: 52px; padding: 0 52px 0 14px;
+      border: 1px solid var(--line); border-radius: 11px; background: var(--bg);
+    }
+    .icon-btn {
+      border: 0; background: transparent; color: var(--muted); width: 40px; height: 40px;
+      display: grid; place-items: center; border-radius: 50%;
+    }
+    .input-wrap .icon-btn { position: absolute; right: 6px; top: 6px; }
+    .icon-btn:hover { background: var(--surface-2); color: var(--ink); }
+    .icon-btn svg { width: 20px; height: 20px; }
+    .model-row { margin-top: 18px; }
+    select { width: 100%; min-height: 48px; border: 1px solid var(--line); border-radius: 11px; padding: 0 12px; background: var(--bg); }
+    .primary {
+      width: 100%; min-height: 52px; border: 0; border-radius: 12px; padding: 0 18px; margin-top: 22px;
+      background: var(--accent); color: white; font-weight: 700; box-shadow: 0 8px 20px var(--accent-shadow);
+    }
+    .primary:hover { background: var(--accent-strong); }
+    .primary[disabled] { opacity: .62; cursor: wait; }
+    .fine-print { margin-top: 16px !important; font-size: .82rem; }
+    .status { min-height: 20px; margin: 12px 0 0 !important; font-size: .88rem; color: var(--danger) !important; }
+    .learn-link { color: var(--accent-strong); text-underline-offset: 3px; }
+    .key-guide { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .key-guide h3 { margin: 0 0 9px; font-size: .95rem; }
+    .key-guide ol { margin: 0 0 12px 20px; padding: 0; color: var(--muted); font-size: .84rem; line-height: 1.55; }
+    .guide-btn { display: inline-flex; align-items: center; min-height: 36px; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--muted); font-size: .8rem; }
+    .guide-btn[disabled] { cursor: not-allowed; opacity: .72; }
+
+    /* Chat */
+    .chat-app { display: none; min-height: 100vh; min-height: 100dvh; grid-template-rows: auto 1fr auto; }
+    .chat-app.active { display: grid; }
+    .topbar {
+      position: sticky; top: 0; z-index: 4; display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; padding: max(12px, env(safe-area-inset-top)) max(18px, calc((100vw - 920px)/2)) 12px;
+      background: var(--bg); border-bottom: 1px solid var(--line);
+    }
+    .presence { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 5px var(--good-ring); }
+    .presence strong { font-size: .96rem; }
+    .presence span { color: var(--muted); font-size: .78rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 48vw; }
+    .toolbar { display: flex; gap: 4px; }
+    .thread { width: min(100%, 920px); margin: 0 auto; padding: 42px 18px 170px; }
+    .welcome { max-width: 680px; margin: 8vh 0 0; }
+    .welcome h2 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3.65rem); line-height: 1.06; letter-spacing: -.045em; }
+    .welcome p { margin: 0; color: var(--muted); font-size: 1.05rem; line-height: 1.6; }
+    .key-notice { display: flex; align-items: flex-start; gap: 10px; margin-top: 22px; padding: 13px 15px; max-width: 620px; border: 1px solid var(--line); border-radius: 12px 4px 12px 12px; background: var(--surface); color: var(--muted); font-size: .88rem; line-height: 1.45; }
+    .key-notice svg { width: 18px; height: 18px; flex: none; margin-top: 1px; color: var(--accent); }
+    .feature-strip { list-style: none; padding: 0; margin: 22px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 15px 5px 15px 15px; overflow: hidden; background: var(--surface); }
+    .feature-strip li { min-width: 0; padding: 13px; border-right: 1px solid var(--line); font-size: .78rem; font-weight: 600; line-height: 1.25; }
+    .feature-strip li:last-child { border-right: 0; }
+    .feature-strip svg { display: block; width: 18px; height: 18px; margin-bottom: 8px; color: var(--accent); }
+    .voice-demo { margin-top: 12px; border: 0; background: transparent; color: var(--accent-strong); padding: 0; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+    .suggestions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 30px; }
+    .suggestion { border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-align: left; padding: 16px; border-radius: 16px 6px 16px 16px; min-height: 100px; font-weight: 600; line-height: 1.35; }
+    .suggestion small { display: block; color: var(--muted); margin-top: 9px; font-weight: 400; }
+    .suggestion:hover { border-color: var(--accent); }
+    .messages { display: grid; gap: 22px; }
+    .message { display: flex; gap: 12px; max-width: 84%; }
+    .message.user { margin-left: auto; flex-direction: row-reverse; }
+    .avatar { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; flex: none; margin-top: 3px; background: var(--accent-soft); color: var(--accent-strong); font-weight: 700; font-size: .78rem; }
+    .message.user .avatar { background: var(--user); color: var(--user-ink); }
+    .bubble { background: var(--surface); border: 1px solid var(--line); padding: 13px 15px; border-radius: 5px 18px 18px 18px; line-height: 1.62; overflow-wrap: anywhere; }
+    .message.user .bubble { background: var(--user); border-color: var(--user); color: var(--user-ink); border-radius: 18px 5px 18px 18px; }
+    .bubble p { margin: 0 0 10px; }
+    .bubble p:last-child { margin-bottom: 0; }
+    .bubble ul, .bubble ol { margin: 8px 0 8px 20px; padding: 0; }
+    .bubble code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; background: var(--surface-2); padding: 2px 5px; border-radius: 4px; }
+    .message.user .bubble code { background: rgba(255,255,255,.15); }
+    .image-preview { width: min(280px, 100%); display: block; border-radius: 10px; margin-bottom: 10px; }
+    .message-actions { display: flex; gap: 4px; margin-top: 6px; }
+    .tiny-btn { border: 0; background: transparent; color: var(--muted); padding: 5px 8px; border-radius: 7px; font-size: .78rem; }
+    .tiny-btn:hover { background: var(--surface-2); color: var(--ink); }
+    .typing { display: flex; gap: 5px; padding: 8px 2px; }
+    .typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: bounce 1s infinite alternate; }
+    .typing i:nth-child(2) { animation-delay: .18s; }
+    .typing i:nth-child(3) { animation-delay: .36s; }
+    @keyframes bounce { to { transform: translateY(-6px); opacity: .45; } }
+
+    .composer-zone {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+      padding: 12px 18px max(14px, env(safe-area-inset-bottom));
+      background: linear-gradient(to bottom, transparent, var(--bg) 22%, var(--bg));
+    }
+    .composer { width: min(100%, 920px); margin: 0 auto; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); border-radius: 22px 8px 22px 22px; padding: 9px; }
+    .attachment { display: none; align-items: center; gap: 10px; padding: 3px 4px 10px; }
+    .attachment.active { display: flex; }
+    .attachment img { width: 54px; height: 54px; object-fit: cover; border-radius: 9px; }
+    .attachment span { min-width: 0; flex: 1; color: var(--muted); font-size: .82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .compose-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 5px; align-items: end; }
+    textarea { width: 100%; resize: none; min-height: 44px; max-height: 150px; border: 0; background: transparent; padding: 11px 8px; line-height: 1.45; }
+    textarea:focus { outline: 0; }
+    .send { border: 0; width: 44px; height: 44px; border-radius: 13px 5px 13px 13px; display: grid; place-items: center; background: var(--accent); color: white; }
+    .send:hover { background: var(--accent-strong); }
+    .send:disabled { opacity: .5; cursor: not-allowed; }
+    .send svg { width: 20px; height: 20px; }
+    .mic.listening { color: white; background: var(--danger); animation: pulse 1.25s ease-in-out infinite; }
+    @keyframes pulse { 50% { box-shadow: 0 0 0 7px var(--danger-ring); } }
+    .composer-note { text-align: center; color: var(--muted); font-size: .72rem; margin: 7px 0 0; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    .toast { position: fixed; left: 50%; bottom: 132px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 14px; border-radius: 10px; font-size: .85rem; z-index: 20; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .2s; }
+    .toast.show { opacity: 1; }
+
+    @media (max-width: 760px) {
+      .setup-grid { grid-template-columns: 1fr; gap: 32px; }
+      .intro h1 { max-width: 11ch; font-size: clamp(2.45rem, 13vw, 4.2rem); }
+      .intro p { font-size: 1rem; }
+      .capabilities { grid-template-columns: 1fr 1fr; font-size: .9rem; gap: 10px; }
+      .key-card { border-radius: 22px 7px 22px 22px; padding: 24px 20px; }
+      .thread { padding-top: 26px; padding-bottom: 270px; }
+      .welcome { margin-top: 3vh; }
+      .feature-strip { grid-template-columns: 1fr 1fr; }
+      .feature-strip li { border-bottom: 1px solid var(--line); }
+      .feature-strip li:nth-child(2) { border-right: 0; }
+      .feature-strip li:nth-child(3), .feature-strip li:nth-child(4) { border-bottom: 0; }
+      .suggestions { grid-template-columns: 1fr 1fr; }
+      .suggestion { min-height: auto; padding: 12px; font-size: .86rem; }
+      .suggestion small { display: block; margin: 4px 0 0; }
+      .message { max-width: 94%; }
+      .avatar { display: none; }
+      .topbar { padding-left: 14px; padding-right: 14px; }
+      .toolbar .icon-btn:first-child { display: none; }
+      .composer-zone { padding-left: 10px; padding-right: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="setup" id="setupView" role="dialog" aria-modal="true" aria-labelledby="setupTitle" hidden>
+      <div class="setup-grid">
+        <div class="intro">
+          <h1>Apna AI, apni key se.</h1>
+          <p>Gemini ke saath sawal karein, tasveer samjhein aur awaaz se baat karein — seedha mobile browser mein.</p>
+          <ul class="capabilities" aria-label="Features">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Smart chat</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M9 18h6"/></svg>Mobile friendly</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg>Voice input</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>Image analysis</li>
+          </ul>
+        </div>
+
+        <form class="key-card" id="keyForm">
+          <button class="icon-btn modal-close" id="closeKey" type="button" aria-label="Close API key dialog" title="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+          <h2 id="setupTitle">Gemini key lagayein</h2>
+          <p>Saathi ko jawab dene ke liye Google AI Studio ki API key chahiye. Key sirf is khuli tab ki memory mein rahegi aur refresh par mit jayegi.</p>
+          <label class="field-label" for="apiKey">Gemini API key <small>required</small></label>
+          <div class="input-wrap">
+            <input id="apiKey" name="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…" required aria-describedby="keyHelp" />
+            <button class="icon-btn" type="button" id="toggleKey" aria-label="Show API key" title="Show key">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="model-row">
+            <label class="field-label" for="model">Gemini model</label>
+            <select id="model" name="model">
+              <option value="gemini-flash-lite-latest" selected>Gemini Flash Lite — free-friendly</option>
+              <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash Lite — fast</option>
+              <option value="gemini-flash-latest">Gemini Flash — stronger</option>
+            </select>
+          </div>
+          <button class="primary" id="connectBtn" type="submit">Key use karein</button>
+          <p class="status" id="connectStatus" role="status" aria-live="polite"></p>
+          <div class="key-guide" id="keyHelp">
+            <h3>API key kahaan se milegi?</h3>
+            <ol>
+              <li><a class="learn-link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a> kholein aur sign in karein.</li>
+              <li>“Get API key” ya “Create API key” dabayein.</li>
+              <li>Key copy karke upar paste karein.</li>
+            </ol>
+            <button class="guide-btn" type="button" disabled title="Owner apna tutorial link baad mein add karega">YouTube guide — link coming soon</button>
+          </div>
+          <p class="fine-print">Google ke free-tier limits aur data terms apply hote hain.</p>
+        </form>
+      </div>
+    </section>
+
+    <section class="chat-app active" id="chatView" aria-label="AI chat">
+      <header class="topbar">
+        <div class="presence">
+          <span class="dot" aria-hidden="true"></span>
+          <div><strong id="statusLabel">Interface ready</strong><span id="modelLabel">Key sirf action par maangi jayegi</span></div>
+        </div>
+        <div class="toolbar">
+          <button class="icon-btn" id="downloadBtn" type="button" title="Download chat" aria-label="Download chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+          </button>
+          <button class="icon-btn" id="clearBtn" type="button" title="New chat" aria-label="Start new chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+          <button class="icon-btn" id="settingsBtn" type="button" title="Change key" aria-label="Change API key">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H3v-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V3h4v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="thread" id="thread">
+        <div class="welcome" id="welcome">
+          <h2>Aaj kis kaam mein saath chahiye?</h2>
+          <p>Roman Urdu, Urdu ya English mein bolein ya likhein. Behtar nateeje ke liye apna maqsad aur zaroori details saath dein.</p>
+          <div class="key-notice" id="keyNotice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 2l-2 2m-7.6 7.6a5 5 0 1 1-7.1 7.1 5 5 0 0 1 7.1-7.1ZM11 12l5.5-5.5m0 0 3 3M16.5 6.5l2-2"/></svg>
+            <span>Saathi sawal, tasveer aur awaaz ke saath madad karta hai. Pehla message bhejne par hi Gemini API key maangi jayegi.</span>
+          </div>
+          <ul class="feature-strip" aria-label="Saathi features">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>Smart chat</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg>Voice input</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>Image analysis</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M9 18h6"/></svg>Mobile friendly</li>
+          </ul>
+          <button class="voice-demo" id="voiceDemoBtn" type="button">Awaaz ka demo sunain — key ke baghair</button>
+          <div class="suggestions">
+            <button class="suggestion" type="button" data-prompt="Mere liye aaj ka simple aur practical to-do plan banao. Pehle mujh se 3 zaroori sawal poochho.">Aaj ka plan banao <small>step by step</small></button>
+            <button class="suggestion" type="button" data-prompt="Is tasveer ko detail mein samjhao aur jo kaam ki cheezen nazar aa rahi hain unki list banao.">Tasveer samjhao <small>photo attach karein</small></button>
+          </div>
+        </div>
+        <div class="messages" id="messages" aria-live="polite"></div>
+      </main>
+
+      <div class="composer-zone">
+        <div class="composer">
+          <div class="attachment" id="attachment">
+            <img id="attachmentThumb" alt="Selected image preview" />
+            <span id="attachmentName"></span>
+            <button class="icon-btn" id="removeAttachment" type="button" aria-label="Remove image" title="Remove image">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            </button>
+          </div>
+          <div class="compose-row">
+            <input class="sr-only" id="fileInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" capture="environment" />
+            <button class="icon-btn" id="attachBtn" type="button" title="Attach image" aria-label="Attach an image">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.4 11.6-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.8-2.8l8.4-8.4"/></svg>
+            </button>
+            <label class="sr-only" for="prompt">Message</label>
+            <textarea id="prompt" rows="1" placeholder="Saathi ko message karein…"></textarea>
+            <button class="icon-btn mic" id="micBtn" type="button" title="Speak" aria-label="Start voice input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg>
+            </button>
+            <button class="send" id="sendBtn" type="button" title="Send" aria-label="Send message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/></svg>
+            </button>
+          </div>
+        </div>
+        <p class="composer-note">Web app phone ki doosri apps ko control nahi kar sakti; device actions ke liye native app aur OS permissions chahiyen.</p>
+      </div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var apiKey = "";
+  var selectedModel = "gemini-flash-lite-latest";
+  var history = [];
+  var busy = false;
+  var pendingImage = null;
+  var recognition = null;
+  var resumeAfterKey = false;
+  var browserUA = navigator.userAgent || "";
+  var embeddedWebView = /(?:;\s*wv\)|\bwv\b|FBAN|FBAV|Instagram)/i.test(browserUA);
+
+  function speechOutputAvailable() {
+    return !embeddedWebView && "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
+  }
+
+  var setupView = document.getElementById("setupView");
+  var chatView = document.getElementById("chatView");
+  var keyForm = document.getElementById("keyForm");
+  var apiKeyInput = document.getElementById("apiKey");
+  var modelSelect = document.getElementById("model");
+  var connectBtn = document.getElementById("connectBtn");
+  var connectStatus = document.getElementById("connectStatus");
+  var promptInput = document.getElementById("prompt");
+  var sendBtn = document.getElementById("sendBtn");
+  var messages = document.getElementById("messages");
+  var welcome = document.getElementById("welcome");
+  var modelLabel = document.getElementById("modelLabel");
+  var statusLabel = document.getElementById("statusLabel");
+  var fileInput = document.getElementById("fileInput");
+  var attachment = document.getElementById("attachment");
+  var attachmentThumb = document.getElementById("attachmentThumb");
+  var attachmentName = document.getElementById("attachmentName");
+  var micBtn = document.getElementById("micBtn");
+  var toast = document.getElementById("toast");
+
+  function showToast(text) {
+    toast.textContent = text;
+    toast.classList.add("show");
+    window.setTimeout(function () { toast.classList.remove("show"); }, 2100);
+  }
+
+  function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function (c) {
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c];
+    });
+  }
+
+  function formatText(text) {
+    var safe = escapeHtml(text || "");
+    safe = safe.replace(/```([\s\S]*?)```/g, function (_, code) { return "<pre><code>" + code.trim() + "</code></pre>"; });
+    safe = safe.replace(/`([^`]+)`/g, "<code>$1</code>");
+    safe = safe.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    safe = safe.replace(/^### (.+)$/gm, "<strong>$1</strong>");
+    safe = safe.replace(/^[-•] (.+)$/gm, "<span>• $1</span>");
+    safe = safe.split(/\n{2,}/).map(function (block) { return "<p>" + block.replace(/\n/g, "<br>") + "</p>"; }).join("");
+    return safe;
+  }
+
+  function scrollBottom() {
+    window.requestAnimationFrame(function () { window.scrollTo(0, document.body.scrollHeight); });
+  }
+
+  function addMessage(role, text, imageUrl) {
+    welcome.hidden = true;
+    var item = document.createElement("article");
+    item.className = "message " + role;
+    var avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = role === "user" ? "YOU" : "AI";
+    var body = document.createElement("div");
+    var bubble = document.createElement("div");
+    bubble.className = "bubble";
+    if (imageUrl) {
+      var img = document.createElement("img");
+      img.className = "image-preview";
+      img.src = imageUrl;
+      img.alt = "Attached image";
+      bubble.appendChild(img);
+    }
+    var content = document.createElement("div");
+    content.innerHTML = formatText(text);
+    bubble.appendChild(content);
+    body.appendChild(bubble);
+    if (role === "assistant") {
+      var actions = document.createElement("div");
+      actions.className = "message-actions";
+      var copy = document.createElement("button");
+      copy.className = "tiny-btn";
+      copy.type = "button";
+      copy.textContent = "Copy";
+      copy.addEventListener("click", function () {
+        navigator.clipboard.writeText(text).then(function () { showToast("Jawab copy ho gaya"); }).catch(function () { showToast("Copy nahi ho saka"); });
+      });
+      var speak = document.createElement("button");
+      speak.className = "tiny-btn";
+      speak.type = "button";
+      speak.textContent = "Suno";
+      speak.addEventListener("click", function () {
+        if (!speechOutputAvailable()) { showToast(embeddedWebView ? "Awaaz ke liye main Chrome ya Safari mein kholein" : "Is browser mein read-aloud available nahi"); return; }
+        try {
+          window.speechSynthesis.cancel();
+          var utterance = new SpeechSynthesisUtterance(text.slice(0, 6000));
+          utterance.lang = /[\u0600-\u06FF]/.test(text) ? "ur-PK" : "en-US";
+          window.speechSynthesis.speak(utterance);
+        } catch (speechError) {
+          showToast("Awaaz shuru nahi ho saki");
+        }
+      });
+      actions.appendChild(copy);
+      actions.appendChild(speak);
+      body.appendChild(actions);
+    }
+    item.appendChild(avatar);
+    item.appendChild(body);
+    messages.appendChild(item);
+    scrollBottom();
+    return item;
+  }
+
+  function addTyping() {
+    var item = document.createElement("article");
+    item.className = "message assistant";
+    item.id = "typingMessage";
+    item.innerHTML = '<div class="avatar">AI</div><div class="bubble"><div class="typing" aria-label="Gemini is thinking"><i></i><i></i><i></i></div></div>';
+    messages.appendChild(item);
+    scrollBottom();
+  }
+
+  function removeTyping() {
+    var el = document.getElementById("typingMessage");
+    if (el) el.remove();
+  }
+
+  function autoResize() {
+    promptInput.style.height = "auto";
+    promptInput.style.height = Math.min(promptInput.scrollHeight, 150) + "px";
+  }
+
+  function clearAttachment() {
+    pendingImage = null;
+    fileInput.value = "";
+    attachment.classList.remove("active");
+    attachmentThumb.removeAttribute("src");
+  }
+
+  function getSystemInstruction() {
+    return "You are Saathi, a practical personal AI assistant. Reply in the same language and script the user uses. If they use Roman Urdu, answer in clear Roman Urdu. Be direct, useful, and honest. Never claim you controlled the phone, opened an app, sent a message, changed a device setting, accessed private accounts, or completed an external action; this web app cannot do those things. For consequential actions, provide steps and ask before assuming details. Use headings and short lists when helpful.";
+  }
+
+  function openKeyDialog(continueMessage) {
+    resumeAfterKey = Boolean(continueMessage);
+    connectStatus.textContent = "";
+    setupView.hidden = false;
+    window.setTimeout(function () { apiKeyInput.focus(); }, 0);
+  }
+
+  function closeKeyDialog() {
+    setupView.hidden = true;
+    apiKeyInput.value = "";
+    connectStatus.textContent = "";
+    promptInput.focus();
+  }
+
+  keyForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var key = apiKeyInput.value.trim();
+    if (!key) {
+      connectStatus.textContent = "Pehle Gemini API key paste karein.";
+      return;
+    }
+    apiKey = key;
+    selectedModel = modelSelect.value;
+    statusLabel.textContent = "Key loaded";
+    modelLabel.textContent = "Pehle jawab par verify hogi";
+    var shouldContinue = resumeAfterKey;
+    resumeAfterKey = false;
+    closeKeyDialog();
+    showToast("Key is tab ke liye lag gayi");
+    if (shouldContinue) sendMessage();
+  });
+
+  document.getElementById("closeKey").addEventListener("click", function () {
+    resumeAfterKey = false;
+    closeKeyDialog();
+  });
+
+  document.getElementById("toggleKey").addEventListener("click", function () {
+    var showing = apiKeyInput.type === "text";
+    apiKeyInput.type = showing ? "password" : "text";
+    this.setAttribute("aria-label", showing ? "Show API key" : "Hide API key");
+    this.title = showing ? "Show key" : "Hide key";
+  });
+
+  async function sendMessage() {
+    var text = promptInput.value.trim();
+    if ((!text && !pendingImage) || busy) return;
+    if (!apiKey) { openKeyDialog(true); return; }
+
+    var imageForDisplay = pendingImage ? pendingImage.url : null;
+    var imagePart = pendingImage ? { inline_data: { mime_type: pendingImage.mime, data: pendingImage.data } } : null;
+    var userParts = [];
+    if (text) userParts.push({ text: text });
+    if (imagePart) userParts.push(imagePart);
+    var displayText = text || "Is tasveer ko samjhao.";
+
+    addMessage("user", displayText, imageForDisplay);
+    promptInput.value = "";
+    autoResize();
+    clearAttachment();
+    busy = true;
+    sendBtn.disabled = true;
+    addTyping();
+
+    var requestHistory = history.slice(-14).concat([{ role: "user", parts: userParts }]);
+    try {
+      var endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(selectedModel) + ":generateContent";
+      var response;
+      try {
+        response = await fetch(endpoint, {
+          method: "POST",
+          mode: "cors",
+          credentials: "omit",
+          cache: "no-store",
+          referrerPolicy: "no-referrer",
+          headers: { "Content-Type": "application/json", "X-Goog-Api-Key": apiKey },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: getSystemInstruction() }] },
+            contents: requestHistory,
+            generationConfig: { temperature: 0.7, topP: 0.92, maxOutputTokens: 2048 }
+          })
+        });
+      } catch (networkError) {
+        throw new Error("NETWORK_REQUEST_FAILED: " + (networkError.name || "Error") + ": " + (networkError.message || "Request blocked before an HTTP response"));
+      }
+      var data = await response.json().catch(function () { return {}; });
+      if (!response.ok) {
+        var apiMessage = data.error && data.error.message ? data.error.message : "Gemini request failed";
+        throw new Error("HTTP " + response.status + ": " + apiMessage);
+      }
+      var candidate = data.candidates && data.candidates[0];
+      var reply = candidate && candidate.content && candidate.content.parts ? candidate.content.parts.map(function (p) { return p.text || ""; }).join("\n") : "";
+      if (!reply) {
+        var reason = candidate && candidate.finishReason ? candidate.finishReason : "no response";
+        throw new Error("Gemini ne jawab return nahi kiya (" + reason + ").");
+      }
+      removeTyping();
+      statusLabel.textContent = "Connected";
+      modelLabel.textContent = modelSelect.options[modelSelect.selectedIndex].text.split(" — ")[0];
+      addMessage("assistant", reply);
+      history.push({ role: "user", parts: [{ text: displayText }] });
+      history.push({ role: "model", parts: [{ text: reply }] });
+    } catch (error) {
+      removeTyping();
+      var friendly = error.message || "Unknown error";
+      if (/quota|resource.exhausted|429/i.test(friendly)) {
+        friendly = "Free-tier limit filhaal poori ho gayi hai. Thori der baad dobara koshish karein ya AI Studio mein quota check karein.";
+      } else if (/API key not valid|API_KEY_INVALID|401/i.test(friendly)) {
+        apiKey = "";
+        statusLabel.textContent = "Interface ready";
+        modelLabel.textContent = "Nayi key zaroori hai";
+        friendly = "Yeh key Gemini API ne accept nahi ki. Google AI Studio se nayi Gemini API key banayein; phir upar settings se lagayein.";
+      } else if (/403|permission|referer|restricted/i.test(friendly)) {
+        apiKey = "";
+        statusLabel.textContent = "Interface ready";
+        modelLabel.textContent = "Key restrictions check karein";
+        friendly = "Google ne is key ko is website par use karne ki ijazat nahi di. AI Studio se nayi key banayein ya key restrictions check karein.";
+      } else if (/404|not found|not supported/i.test(friendly)) {
+        friendly = "Yeh Gemini model is key ke liye available nahi. Settings mein Gemini Flash Lite select karke dobara koshish karein.";
+      } else if (/NETWORK_REQUEST_FAILED|Failed to fetch|NetworkError|TypeError/i.test(friendly)) {
+        var technical = friendly.replace(/^NETWORK_REQUEST_FAILED:\s*/i, "");
+        friendly = "Request HTTP response se pehle browser mein block ho gayi. Internet, ad-blocker/VPN aur browser ki cross-site permissions check karein. Technical detail: " + technical;
+      }
+      addMessage("assistant", "Maazrat — " + friendly);
+    } finally {
+      busy = false;
+      sendBtn.disabled = false;
+      promptInput.focus();
+    }
+  }
+
+  sendBtn.addEventListener("click", sendMessage);
+  promptInput.addEventListener("input", autoResize);
+  promptInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); sendMessage(); }
+  });
+
+  document.querySelectorAll(".suggestion").forEach(function (button) {
+    button.addEventListener("click", function () {
+      promptInput.value = button.getAttribute("data-prompt");
+      autoResize();
+      promptInput.focus();
+    });
+  });
+
+  document.getElementById("attachBtn").addEventListener("click", function () { fileInput.click(); });
+  document.getElementById("removeAttachment").addEventListener("click", clearAttachment);
+  fileInput.addEventListener("change", function () {
+    var file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+    if (file.size > 4 * 1024 * 1024) { showToast("Image 4 MB se chhoti honi chahiye"); clearAttachment(); return; }
+    var reader = new FileReader();
+    reader.onload = function () {
+      var result = String(reader.result);
+      pendingImage = { mime: file.type, data: result.split(",")[1], url: result, name: file.name };
+      attachmentThumb.src = result;
+      attachmentName.textContent = file.name;
+      attachment.classList.add("active");
+    };
+    reader.readAsDataURL(file);
+  });
+
+  var SpeechRecognition = embeddedWebView ? null : (window.SpeechRecognition || window.webkitSpeechRecognition);
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = "ur-PK";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.onstart = function () { micBtn.classList.add("listening"); micBtn.setAttribute("aria-label", "Stop voice input"); };
+    recognition.onend = function () { micBtn.classList.remove("listening"); micBtn.setAttribute("aria-label", "Start voice input"); };
+    recognition.onerror = function (event) { showToast(event.error === "not-allowed" ? "Microphone permission allow karein" : "Awaaz samajh nahi aayi"); };
+    recognition.onresult = function (event) {
+      var transcript = "";
+      for (var i = event.resultIndex; i < event.results.length; i++) transcript += event.results[i][0].transcript;
+      promptInput.value = transcript;
+      autoResize();
+    };
+    micBtn.addEventListener("click", function () {
+      try {
+        if (micBtn.classList.contains("listening")) recognition.stop(); else recognition.start();
+      } catch (recognitionError) {
+        showToast("Voice input shuru nahi ho saka");
+      }
+    });
+  } else {
+    micBtn.addEventListener("click", function () { showToast(embeddedWebView ? "Voice input ke liye main Chrome ya Safari mein kholein" : "Voice input is browser mein available nahi"); });
+    micBtn.style.opacity = ".5";
+  }
+
+  document.getElementById("voiceDemoBtn").addEventListener("click", function () {
+    if (!speechOutputAvailable()) { showToast(embeddedWebView ? "Awaaz ke liye main Chrome ya Safari mein kholein" : "Is browser mein awaaz ka demo available nahi"); return; }
+    try {
+      window.speechSynthesis.cancel();
+      var demo = new SpeechSynthesisUtterance("Assalam o alaikum. Main Saathi hoon. Awaaz ka yeh demo API key ke baghair chal raha hai.");
+      demo.lang = "ur-PK";
+      window.speechSynthesis.speak(demo);
+      showToast("Awaaz ka demo chal raha hai");
+    } catch (speechError) {
+      showToast("Awaaz ka demo shuru nahi ho saka");
+    }
+  });
+
+  document.getElementById("clearBtn").addEventListener("click", function () {
+    history = [];
+    messages.innerHTML = "";
+    welcome.hidden = false;
+    clearAttachment();
+    window.scrollTo(0, 0);
+    showToast("Nayi chat tayyar hai");
+  });
+
+  document.getElementById("settingsBtn").addEventListener("click", function () {
+    openKeyDialog(false);
+  });
+
+  document.getElementById("downloadBtn").addEventListener("click", function () {
+    if (!history.length) { showToast("Download ke liye abhi chat nahi hai"); return; }
+    var text = history.map(function (entry) {
+      var label = entry.role === "user" ? "You" : "Saathi";
+      return label + ": " + entry.parts.map(function (p) { return p.text || "[image]"; }).join("\n");
+    }).join("\n\n");
+    var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "saathi-chat.txt";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  window.addEventListener("pagehide", function () {
+    try { if (recognition) recognition.abort(); } catch (ignoreRecognitionError) {}
+    try { if ("speechSynthesis" in window) window.speechSynthesis.cancel(); } catch (ignoreSpeechError) {}
+    clearAttachment();
+  });
+})();
+</script>
+</body>
+</html>
